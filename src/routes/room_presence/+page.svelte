@@ -5,7 +5,7 @@
 	let cellGrid;
 
 	onMount(async () => {
-		const module = await import("/src/db/fer_building.js")
+		const module = await import("/src/db/room_presence.js")
 		data = module.data;
 
 		const floor = data.floors[0];
@@ -66,6 +66,9 @@
 								colspan={cell.colspan}
 							>
 								{cell.room?.name}
+								{#if (cell.room)}
+									({cell.room?.currentPresence})
+								{/if}
 							</td>
 						{/if}
 					{/each}
@@ -93,14 +96,14 @@
         position: relative;
     }
 
-		.container {
-				display: flex;
-				flex-direction: column;
-				justify-content: start;
-				align-items: center;
-				width: 100vw;
-				height: 100vh;
-		}
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
 
     .room {
         background-color: #cce5ff;

@@ -4,8 +4,25 @@
 	let data;
 	let cellGrid;
 
+	const maxPresenceIndex = 9;
+	const baseHue = 220;
+	const saturation = 100;
+
+	function getShade(index) {
+		const minLightness = 30;
+		const maxLightness = 90;
+
+		if (index > maxPresenceIndex || index === -1) {
+			return "#cce5ff";
+		}
+
+		const clampedIndex = Math.min(index, maxPresenceIndex);
+		const lightness = minLightness + ((maxLightness - minLightness) * (clampedIndex / maxPresenceIndex));
+		return `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
+	}
+
 	onMount(async () => {
-		const module = await import("/src/db/fer_building.js")
+		const module = await import("/src/db/user_presence.js")
 		data = module.data;
 
 		const floor = data.floors[0];
@@ -64,6 +81,7 @@
 								class={cell.type}
 								rowspan={cell.rowspan}
 								colspan={cell.colspan}
+								style="background-color: {getShade(cell.room?.presenceIndex)}"
 							>
 								{cell.room?.name}
 							</td>
@@ -93,14 +111,14 @@
         position: relative;
     }
 
-		.container {
-				display: flex;
-				flex-direction: column;
-				justify-content: start;
-				align-items: center;
-				width: 100vw;
-				height: 100vh;
-		}
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
 
     .room {
         background-color: #cce5ff;
