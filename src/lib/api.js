@@ -41,3 +41,11 @@ export async function getUsers(page, size) {
 
 	return await res.json();
 }
+
+export async function getDevices(page, size) {
+	const res = await fetch(`${ASSETS_SERVICE_API}/v1/devices?page=${page}&size=${size}`);
+
+	if (!res.ok) throw new Error("Error fetching the data");
+
+	return await res.json();
+}
