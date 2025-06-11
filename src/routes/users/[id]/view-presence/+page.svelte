@@ -1,39 +1,46 @@
 <script>
+	import { page } from "$app/stores";
 	import { onMount } from "svelte";
+	import { getBuildingFloorUserPresence } from "$lib/api.js";
+
+	$: userId = $page.params.id;
 
 	let data;
+	let meta;
 	let cellGrid;
 
 	const maxPresenceIndex = 9;
 	const baseHue = 220;
 	const saturation = 100;
 
-	function getShade(index) {
+	const getShade = (index) => {
 		const minLightness = 30;
 		const maxLightness = 90;
 
-		if (index > maxPresenceIndex || index === -1) {
+		if (index > maxPresenceIndex || index === 0) {
 			return "#cce5ff";
 		}
 
 		const clampedIndex = Math.min(index, maxPresenceIndex);
 		const lightness = minLightness + ((maxLightness - minLightness) * (clampedIndex / maxPresenceIndex));
 		return `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
-	}
+	};
 
-	onMount(async () => {
-		const module = await import("/src/db/user_presence.js")
-		data = module.data;
+	const loadData = async (buildingId, floorId, userId) => {
+		const body = await getBuildingFloorUserPresence(buildingId, floorId, userId);
+		data = body.content;
+		meta = body.meta;
+		debugger;
 
-		const floor = data.floors[0];
+		const floor = data.floor;
 		const rooms = floor.rooms;
 
 		// Calculate a number of rows and cols
 		let rows = 0;
 		let cols = 0;
 		rooms.forEach(({ roomVisualization: rv }) => {
-			rows = Math.max(rows, rv.startRow + rv.rowspan);
-			cols = Math.max(cols, rv.startCol + rv.colspan);
+			rows = Math.max(rows, rv.startRow + rv.rowSpan);
+			cols = Math.max(cols, rv.startCol + rv.colSpan);
 		});
 
 		// Init table grid
@@ -42,35 +49,39 @@
 			() => Array.from(
 				{ length: cols },
 				() => (
-					{ type: "hall", render: true, rowspan: 1, colspan: 1, room: null }	// Initially, all cells are hall
+					{ type: "hall", render: true, rowSpan: 1, colSpan: 1, room: null }	// Initially, all cells are hall
 				)
 			)
 		);
 
 		// Place rooms and mark merged cells
 		for (const room of rooms) {
-			const { startRow, startCol, rowspan, colspan } = room.roomVisualization;
+			const { startRow, startCol, rowSpan, colSpan } = room.roomVisualization;
 			cellGrid[startRow][startCol] = {
 				type: "room",	// CSS class
 				render: true, // Will render that cell (html td tag)
-				rowspan,
-				colspan,
+				rowSpan,
+				colSpan,
 				room
 			};
 
-			for (let r = startRow; r < startRow + rowspan; r++) {
-				for (let c = startCol; c < startCol + colspan; c++) {
+			for (let r = startRow; r < startRow + rowSpan; r++) {
+				for (let c = startCol; c < startCol + colSpan; c++) {
 					if (r === startRow && c === startCol) continue;
 					cellGrid[r][c].render = false;	// Won't render since this cell (html td tag) will eventually be merged
 				}
 			}
 		}
+	};
+
+	onMount(async () => {
+		loadData(1, 1, userId);
 	})
 </script>
 
 <div class="container">
 	{#if data}
-		<h1><b>{data.name}</b></h1>
+		<h1 class="page-title"><b>{data.name} - {data.floor.index + 1}. kat</b></h1>
 		<table>
 			<tbody>
 			{#each cellGrid as row, rowIndex (`row-{${rowIndex}}`)}
@@ -79,8 +90,8 @@
 						{#if cell.render}
 							<td
 								class={cell.type}
-								rowspan={cell.rowspan}
-								colspan={cell.colspan}
+								rowspan={cell.rowSpan}
+								colspan={cell.colSpan}
 								style="background-color: {getShade(cell.room?.presenceIndex)}"
 							>
 								{cell.room?.name}
@@ -94,9 +105,29 @@
 	{:else}
 		<p>Loading mock data...</p>
 	{/if}
+
+	{#if meta}
+		<div class="pagination">
+			{#if meta.hasPreviousFloor}
+				<button on:click={() => loadData(1, meta.previousFloorId, userId)}>Previous Floor</button>
+			{/if}
+
+			<span>Floor {meta.currentFloor + 1} of {meta.totalNumberOfFloors}</span>
+
+			{#if meta.hasNextFloor}
+				<button on:click={() => loadData(1, meta.nextFloorId, userId)}>Next Floor</button>
+			{/if}
+		</div>
+	{/if}
 </div>
 
 <style>
+    .page-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
     table {
         border-collapse: collapse;
         border: 2px solid black;
@@ -127,5 +158,32 @@
     .hall {
         background-color: #e2e3e5;
         border: none;
+    }
+
+    .pagination {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pagination span {
+        font-size: 0.95rem;
+        color: #555;
+				margin-left: 0.5rem;
+				margin-right: 0.5rem;
+    }
+
+    .pagination button {
+        padding: 6px 12px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .pagination button:hover {
+        background-color: #ddd;
     }
 </style>

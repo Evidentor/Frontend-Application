@@ -33,3 +33,11 @@ export async function getBuildingFloorUserPresence(buildingId, floorId, userId) 
 
 	return await res.json();
 }
+
+export async function getUsers(page, size) {
+	const res = await fetch(`${ASSETS_SERVICE_API}/v1/users?page=${page}&size=${size}`);
+
+	if (!res.ok) throw new Error("Error fetching the data");
+
+	return await res.json();
+}
