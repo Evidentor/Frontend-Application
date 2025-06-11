@@ -17,6 +17,10 @@
 		goto(`/buildings/${buildingId}/view`);
 	}
 
+	const viewBuildingPresence = (buildingId) => {
+		goto(`/buildings/${buildingId}/view/current-presence`);
+	}
+
 	onMount(async () => {
 		await loadData(0, size)
 	});
@@ -48,6 +52,7 @@
 				<td>{building.numberOfFloors}</td>
 				<td class="actions">
 					<button class="view" on:click={() => viewBuilding(building.id)}>View</button>
+					<button class="view" on:click={() => viewBuildingPresence(building.id)}>Current Presence</button>
 					<button class="edit">Edit</button>
 					<button class="delete">Delete</button>
 				</td>
