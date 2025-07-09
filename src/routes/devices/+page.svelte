@@ -10,7 +10,6 @@
 		const body = await getDevices(page, size);
 		content = body.content;
 		meta = body.meta;
-		debugger;
 	}
 
 	onMount(async () => {

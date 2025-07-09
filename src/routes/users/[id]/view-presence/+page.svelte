@@ -30,7 +30,6 @@
 		const body = await getBuildingFloorUserPresence(buildingId, floorId, userId);
 		data = body.content;
 		meta = body.meta;
-		debugger;
 
 		const floor = data.floor;
 		const rooms = floor.rooms;

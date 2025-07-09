@@ -10,7 +10,6 @@
 	let cellGrid;
 
 	const loadData = async (buildingId, floorId) => {
-		debugger;
 		const body = await getBuildingFloor(buildingId, floorId);
 		data = body.content;
 		meta = body.meta;

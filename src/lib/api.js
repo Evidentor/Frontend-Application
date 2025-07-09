@@ -1,6 +1,6 @@
 // TODO: Use TypeScript
 
-const ASSETS_SERVICE_API = "http://localhost:8080/api";
+const ASSETS_SERVICE_API = "http://localhost:8080/assets/api";
 
 export async function getBuildings(page, size) {
 	const res = await fetch(`${ASSETS_SERVICE_API}/v1/buildings?page=${page}&size=${size}`);
