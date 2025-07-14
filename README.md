@@ -1,28 +1,63 @@
-# sv
+# Frontend-Application
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## About
+The Frontend App provides a user interface for managing and visualizing 
+system data. It includes master data screens for managing users, assets, 
+and permissions, interactive building visualizations, and displays of user 
+presence across rooms and floors.
 
-## Creating a project
+## System Requirements
 
-If you're seeing this, you've probably already done this step. Congrats!
+- NodeJS (used version: 20.17.0)
+- npm (used version: 11.3.0)
+- Docker (if running the service within the Docker container)
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Configuration
 
-# create a new project in my-app
-npx sv create my-app
+### API Gateway
+Configure API Gateway connection in `config.js` file:
+```js
+export const API_GATEWAY_URL = 'http://localhost:8080';
 ```
 
-## Developing
+## How to Install?
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### 1. Clone the repository
+```shell
+git clone https://github.com/Evidentor/Frontend-Application.git
+cd Frontend-Application
+```
 
-```bash
+### 2. Install dependencies
+```shell
+npm install
+```
+
+## How to Run?
+### Run with npm
+```shell
 npm run dev
+```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+### Run with docker
+#### 1. Build the docker image
+```shell
+docker build -t frontend-application .
+```
+
+#### 2. Create the docker container
+```shell
+docker run -d --network host --name frontend-application frontend-application:latest
+```
+
+#### 3. Stop the docker container
+```shell
+docker stop frontend-application
+```
+
+#### 4. Start the docker container
+```shell
+docker start frontend-application
 ```
 
 ## Building
