@@ -77,6 +77,8 @@
 	</tbody>
 </table>
 
+<button class="new-device" on:click={() => goto('/devices/new')}>New Device</button>
+
 {#if meta}
 	<div class="pagination">
 		{#if meta.hasPrevious}
@@ -104,19 +106,19 @@
 {/if}
 
 <style>
-    new-device {
+    .new-device {
         margin-bottom: 1rem;
         padding: 8px 16px;
-        font-size: 1rem;
-        background-color: #44c767;
+        background-color: #28a745;
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 4px;
         cursor: pointer;
+        font-size: 1rem;
     }
 
     .new-device:hover {
-        background-color: #36a85e;
+        background-color: #218838;
     }
 
     .modal-backdrop {
