@@ -56,6 +56,16 @@ export async function getDevices(page, size) {
 	return await res.json();
 }
 
+// TODO: Create and edit
+
+export async function deleteDevice(id) {
+	const res = await fetch(`${ASSETS_SERVICE_API}/v1/devices/${id}`, { method: 'DELETE' });
+	if (!res.ok) {
+		throw new Error("Failed to delete device");
+	}
+}
+
+
 // TODO: Telemetry service
 export async function getLatestRoomEvidences(buildingId, floorId, limit = 10) {
 	const res = await fetch(`${ASSETS_SERVICE_API}/v1/buildings/${buildingId}/floors/${floorId}/telemetries?limit=${limit}`);
