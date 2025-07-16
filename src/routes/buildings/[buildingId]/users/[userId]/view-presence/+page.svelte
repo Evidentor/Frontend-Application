@@ -9,6 +9,7 @@
 	let data;
 	let meta;
 	let cellGrid;
+	let rooms = [];
 
 	const maxPresenceIndex = 9;
 	const baseHue = 220;
@@ -33,7 +34,8 @@
 		meta = body.meta;
 
 		const floor = data.floor;
-		const rooms = floor.rooms;
+		rooms = floor.rooms;
+		rooms.sort((r1, r2) => r1.presenceIndex - r2.presenceIndex);
 
 		// Calculate a number of rows and cols
 		let rows = 0;
@@ -82,42 +84,61 @@
 <div class="container">
 	{#if data}
 		<h1 class="page-title"><b>{data.name} - {data.floor.index + 1}. kat</b></h1>
-		<table>
-			<tbody>
-			{#each cellGrid as row, rowIndex (`row-{${rowIndex}}`)}
-				<tr>
-					{#each row as cell, cellIndex (`cell-${cellIndex}`)}
-						{#if cell.render}
-							<td
-								class={cell.type}
-								rowspan={cell.rowSpan}
-								colspan={cell.colSpan}
-								style="background-color: {getShade(cell.room?.presenceIndex)}"
-							>
-								{cell.room?.name}
-							</td>
+		<div class="content-wrapper">
+			<!-- Left: Map -->
+			<div class="map-area">
+				<table>
+					<tbody>
+					{#each cellGrid as row, rowIndex (`row-{${rowIndex}}`)}
+						<tr>
+							{#each row as cell, cellIndex (`cell-${cellIndex}`)}
+								{#if cell.render}
+									<td
+										class={cell.type}
+										rowspan={cell.rowSpan}
+										colspan={cell.colSpan}
+										style="background-color: {getShade(cell.room?.presenceIndex)}"
+									>
+										{cell.room?.name}
+									</td>
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+					</tbody>
+				</table>
+
+				{#if meta}
+					<div class="pagination">
+						{#if meta.hasPreviousFloor}
+							<button on:click={() => loadData(1, meta.previousFloorId, userId)}>Previous Floor</button>
+						{/if}
+
+						<span>Floor {meta.currentFloor + 1} of {meta.totalNumberOfFloors}</span>
+
+						{#if meta.hasNextFloor}
+							<button on:click={() => loadData(1, meta.nextFloorId, userId)}>Next Floor</button>
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<!-- Right: Sidebar -->
+			<div class="sidebar">
+				<h2>Latest Room Evidences</h2>
+				<ul class="evidence-list">
+					{#each rooms as room}
+						{#if room.presenceIndex > 0}
+							<li>
+								<b>{room.presenceIndex}.</b> {room.name}
+							</li>
 						{/if}
 					{/each}
-				</tr>
-			{/each}
-			</tbody>
-		</table>
+				</ul>
+			</div>
+		</div>
 	{:else}
 		<p>Loading mock data...</p>
-	{/if}
-
-	{#if meta}
-		<div class="pagination">
-			{#if meta.hasPreviousFloor}
-				<button on:click={() => loadData(1, meta.previousFloorId, userId)}>Previous Floor</button>
-			{/if}
-
-			<span>Floor {meta.currentFloor + 1} of {meta.totalNumberOfFloors}</span>
-
-			{#if meta.hasNextFloor}
-				<button on:click={() => loadData(1, meta.nextFloorId, userId)}>Next Floor</button>
-			{/if}
-		</div>
 	{/if}
 </div>
 
@@ -149,6 +170,41 @@
         align-items: center;
         width: 100vw;
         height: 100vh;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .sidebar {
+        flex: 1;
+        background: #f8f9fa;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        border-radius: 8px;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .sidebar h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .evidence-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem 0;
+    }
+
+    .evidence-list li {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .content-wrapper {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        gap: 2rem;
     }
 
     .room {

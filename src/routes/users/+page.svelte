@@ -4,7 +4,7 @@
 
 	let content;
 	let meta;
-	let size = 2;
+	let size = 5;
 
 	const loadData = async (page, size) => {
 		const body = await getUsers(page, size);
