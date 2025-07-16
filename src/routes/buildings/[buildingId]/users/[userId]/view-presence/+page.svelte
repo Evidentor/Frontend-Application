@@ -3,7 +3,8 @@
 	import { onMount } from "svelte";
 	import { getBuildingFloorUserPresence } from "$lib/api.js";
 
-	$: userId = $page.params.id;
+	$: buildingId = $page.params.buildingId;
+	$: userId = $page.params.userId;
 
 	let data;
 	let meta;
@@ -74,7 +75,7 @@
 	};
 
 	onMount(async () => {
-		loadData(1, 1, userId);
+		loadData(buildingId, 1, userId);
 	})
 </script>
 

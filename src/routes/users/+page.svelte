@@ -1,5 +1,4 @@
 <script>
-	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { getUsers } from "$lib/api.js";
 
@@ -11,10 +10,6 @@
 		const body = await getUsers(page, size);
 		content = body.content;
 		meta = body.meta;
-	}
-
-	const viewUserPresence = (userId) => {
-		goto(`/users/${userId}/view-presence`);
 	}
 
 	onMount(async () => {
@@ -43,7 +38,6 @@
 				<td>{user.lastName}</td>
 				<td>{user.cardId}</td>
 				<td class="actions">
-					<button class="view" on:click={() => viewUserPresence(user.id)}>User Presence</button>
 					<button class="edit">Edit</button>
 					<button class="delete">Delete</button>
 				</td>
@@ -113,11 +107,6 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
-    }
-
-    .actions button.view {
-        background-color: #eef;
-        color: #225;
     }
 
     .actions button.edit {
