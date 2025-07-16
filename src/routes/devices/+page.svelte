@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import { getDevices } from "$lib/api.js";
+	import { formatDateTime } from "$lib/utils.js";
 
 	let content;
 	let meta;
@@ -24,8 +25,9 @@
 	<tr>
 		<th>Device Id</th>
 		<th>Room Id</th>
-		<th>Installation Date</th>
 		<th>Serial Number</th>
+		<th>Installation Date</th>
+		<th>Last Received Message</th>
 		<th>Actions</th>
 	</tr>
 	</thead>
@@ -35,8 +37,9 @@
 			<tr>
 				<td>{device.id}</td>
 				<td>{device.roomId ?? "Not Defined"}</td>
-				<td>{device.installationDate.toLocaleString()}</td>
 				<td>{device.serialNumber == "" ? "Not Defined" : device.serialNumber}</td>
+				<td>{formatDateTime(device.installationDate, false)}</td>
+				<td>{device.lastMessageTimestamp ? formatDateTime(device.lastMessageTimestamp, true) : "Never"}</td>
 				<td class="actions">
 					<button class="edit">Edit</button>
 					<button class="delete">Delete</button>
