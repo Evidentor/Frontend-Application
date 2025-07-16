@@ -1,16 +1,16 @@
 <script>
 	import { page } from "$app/stores";
 	import { onMount } from "svelte";
-	import { getBuildingFloorPresence } from "$lib/api.js";
+	import { getBuildingFloor } from "$lib/api.js";
 
-	$: buildingId = $page.params.id;
+	$: buildingId = $page.params.buildingId;
 
 	let data;
 	let meta;
 	let cellGrid;
 
 	const loadData = async (buildingId, floorId) => {
-		const body = await getBuildingFloorPresence(buildingId, floorId);
+		const body = await getBuildingFloor(buildingId, floorId);
 		data = body.content;
 		meta = body.meta;
 
@@ -76,9 +76,6 @@
 								colspan={cell.colSpan}
 							>
 								{cell.room?.name}
-								{#if (cell.room)}
-									({cell.room?.currentPresence})
-								{/if}
 							</td>
 						{/if}
 					{/each}
